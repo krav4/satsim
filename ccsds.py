@@ -27,12 +27,12 @@ class PacketIdentification:
 		self.pkt_type = pkt_type
 		self.sec_flag = sec_flag
 		self.apid = apid
-		
+
 
 class PacketSequenceControl:
 	def __init__(self, sequence_flags=None, pkt_sequence_count=None):
 		self.sequence_flags = sequence_flags
-		
+
 		if self.sequence_flags is None:
 			self.sequence_flags = b'11'
 		else:
@@ -47,12 +47,12 @@ class PacketSequenceControl:
 					self.sequence_flags = b"10"
 				else:
 					raise AssertionError("invalid sequence flag")
-		
+
 		if pkt_sequence_count is None:
 			self.pkt_sequence_count = BitArray(uint=0, length=field_length_mapping["sequence_count"]).bin
 		else:
 			self.pkt_sequence_count = BitArray(uint=pkt_sequence_count, length=field_length_mapping["sequence_count"]).bin
-	
+
 class PacketDataLength:
 	def __init__(self, number_of_bytes):
 		number_of_octets = int(number_of_bytes/2)
@@ -83,9 +83,9 @@ class Packet(PrimaryHeader):
 	def __init__(self, pkt_type, sec_flag, apid, payload, sequence_flags=None, pkt_sequence_count=None, pkt_version=None):
 		self.payload = payload
 		num_bytes = len(payload)
-		
+
 		PrimaryHeader.__init__(self, pkt_type, sec_flag, apid, num_bytes, sequence_flags, pkt_sequence_count, pkt_version)
-		
+
 		self.primary_header_binary = build_binary(self.primary_header_as_list())
 		self.binary = self.primary_header_binary + self.payload
 
@@ -96,14 +96,14 @@ def unpack(pkt_bin, header_length=6):
 	header_binary = ba.to01()
 	# ~ print(header_binary)
 	mapped_header = OrderedDict([(k,None) for k, v in field_length_mapping.items()])
-	
+
 	previous_length = 0
 	current_length = 0
 	for idx, (field_name, length) in enumerate(field_length_mapping.items()):
 		if idx == 0:
 			pass
 		else:
-			previous_length += field_length_mapping.items()[idx-1][1]
+			previous_length += list(field_length_mapping.items())[idx-1][1]
 		current_length += length
 		mapped_header[field_name] = header_binary[previous_length:current_length]
 	return mapped_header

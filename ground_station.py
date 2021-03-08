@@ -1,14 +1,19 @@
 import socket
 import itertools
 import time
+from datetime import datetime
 from bitstring import BitArray
+from ccsds import unpack
+from pprint import pprint
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 print("Creating a UDP socket")
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 print("Binding to the Ground Station UDP/IP address and port: %s:%s" % (str(socket.gethostname()), "8080"))
 serversocket.bind((socket.gethostname(), 8080))
 
-
+transmission_report = open("transmission_report.txt", "a")
 while True:
     try:
         data, address = serversocket.recvfrom(512+48)
@@ -28,9 +33,12 @@ while True:
         else:
             print("Received packet %i of imagery transmission" % count)
             count += 1
-            primary_header=data[0:6]
-            print(BitArray().frombytes(primary_header))
+            mapped_header = unpack(data, header_length=6)
+            print(mapped_header)
+            transmission_report.write(str(datetime.utcnow()) + " : " + str(mapped_header) + "\n")
+            transmission_report.flush()
             image += data[6:]
         time.sleep(0.01)
     except KeyboardInterrupt:
+        transmission_report.close()
         break
