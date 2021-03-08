@@ -1,7 +1,7 @@
 import socket
 import time
 from ccsds import *
-
+from pprint import pprint
 udp_ip = "192.168.1.154"
 udp_port = 8080
 
@@ -14,7 +14,7 @@ f = open("datahawk_dave.jpeg", "rb")
 bitstream = f.read()
 
 payload_size = 512 #bytes - size of CCSDS payload
-apid = "00000100001" #apid - depends on application
+apid = b"00000100001" #apid - depends on application
 pkt_sequence_count = 0
 
 chunked_bitstream = list(chunks(bitstream, payload_size))
@@ -38,15 +38,14 @@ for i, chunk in enumerate(chunked_bitstream):
 		pkt_type=b"0",
 		sec_flag=b"0",
 		apid=apid,
-		payload=bytearray(chunk),
+		payload=chunk,
 		sequence_flags=sequence_flag,
 		pkt_sequence_count=pkt_sequence_count
 	)
 	###################################
 
 	print("Sending packet %i out of %i" %(i, len(chunked_bitstream)))
-	print(pkt.show_primary_header())
-	print(type(pkt.primary_header_binary))
+	pprint(pkt.show_primary_header())
 	s.sendto(pkt.binary, (udp_ip, udp_port))
 	pkt_sequence_count += 1
 	time.sleep(0.07)
