@@ -2,8 +2,13 @@ import socket
 import time
 from ccsds import *
 from pprint import pprint
-udp_ip = "127.0.0.1"
-udp_port = 8080
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--ip", help="ip address of the ground station", type=str, default='127.0.0.1')
+parser.add_argument("--port", help="port to bind for transmission", type=int, default=8080)
+parser.add_argument("--transmit", help="file to transfer to the ground", type=str, default="satellite_imagery")
+args = parser.parse_args()
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -20,8 +25,7 @@ pkt_sequence_count = 0
 chunked_bitstream = list(chunks(bitstream, payload_size))
 print("%i chunks in bitstream, last chunk is %i bytes" % (len(chunked_bitstream), len(chunked_bitstream[-1]))) 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.sendto("txstart".encode(), (udp_ip, udp_port))
-
+s.sendto("txstart".encode(), (args.ip, args.port))
 
 for i, chunk in enumerate(chunked_bitstream):
 	
@@ -46,9 +50,9 @@ for i, chunk in enumerate(chunked_bitstream):
 
 	print("Sending packet %i out of %i" %(i, len(chunked_bitstream)))
 	pprint(pkt.show_primary_header())
-	s.sendto(pkt.binary, (udp_ip, udp_port))
+	s.sendto(pkt.binary, (args.ip, args.port))
 	pkt_sequence_count += 1
 	time.sleep(0.01)
-s.sendto("txend".encode(), (udp_ip, udp_port))
+s.sendto("txend".encode(), (args.ip, args.port))
 
 s.close()

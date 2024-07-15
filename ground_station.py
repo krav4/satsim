@@ -6,12 +6,20 @@ from bitstring import BitArray
 from ccsds import unpack
 from pprint import pprint
 import signal
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--ip", help="ip address of the satellite", type=str, default='127.0.0.1')
+parser.add_argument("--port", help="port to bind for satellite", type=int, default=8080)
+parser.add_argument("--out", help="output filename for received imagery", type=str, default="received_imagery.jpeg")
+args = parser.parse_args()
+
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 print("Creating a UDP socket")
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-print("Binding to the Ground Station UDP/IP address and port: %s:%s" % (str(socket.gethostname()), "8080"))
-serversocket.bind(('127.0.0.1', 8080))
+print("Binding to the Ground Station UDP/IP address and port: %s:%s" % (args.ip,  args.port))
+serversocket.bind((args.ip, args.port))
 
 transmission_report = open("transmission_report.txt", "a")
 while True:
@@ -24,7 +32,7 @@ while True:
         elif data.decode('utf-8', errors="ignore") == "txend":
             print("Imagery transmission finished")
             if image:
-                with open("received_imagery.jpeg", "wb") as f:
+                with open(args.out, "wb") as f:
                     f.write(image)
                 print("Imagery written to a file")
             else:
