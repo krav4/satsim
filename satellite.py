@@ -48,7 +48,7 @@ for i, chunk in enumerate(chunked_bitstream):
 	pprint(pkt.show_primary_header())
 	s.sendto(pkt.binary, (udp_ip, udp_port))
 	pkt_sequence_count += 1
-	time.sleep(0.07)
+	time.sleep(0.01)
 s.sendto("txend".encode(), (udp_ip, udp_port))
 
 s.close()
