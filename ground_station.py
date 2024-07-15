@@ -11,7 +11,7 @@ print("Creating a UDP socket")
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 print("Binding to the Ground Station UDP/IP address and port: %s:%s" % (str(socket.gethostname()), "8080"))
-serversocket.bind((socket.gethostname(), 8080))
+serversocket.bind(('127.0.0.1', 8080))
 
 transmission_report = open("transmission_report.txt", "a")
 while True:

@@ -14,8 +14,8 @@ field_length_mapping = OrderedDict([
 
 def build_binary(field_list):
 	ba = bitarray.bitarray()
-	for field in field_list:
-		ba.extend(field)
+	# for field in field_list:
+	ba.extend("".join(field_list))
 	out = ba.tobytes()
 	return out
 
@@ -34,17 +34,17 @@ class PacketSequenceControl:
 		self.sequence_flags = sequence_flags
 
 		if self.sequence_flags is None:
-			self.sequence_flags = b'11'
+			self.sequence_flags = "11"
 		else:
 			try:
 				assert len(self.sequence_flags) == field_length_mapping["sequence_flag"]
 			except AssertionError:
 				if self.sequence_flags == "first":
-					self.sequence_flags = b"01"
+					self.sequence_flags = "01"
 				elif self.sequence_flags == "continue":
-					self.sequence_flags = b"00"
+					self.sequence_flags = "00"
 				elif self.sequence_flags == "last":
-					self.sequence_flags = b"10"
+					self.sequence_flags = "10"
 				else:
 					raise AssertionError("invalid sequence flag")
 
@@ -65,7 +65,7 @@ class PrimaryHeader(PacketIdentification, PacketSequenceControl, PacketDataLengt
 		PacketSequenceControl.__init__(self, sequence_flags, pkt_sequence_count)
 		PacketDataLength.__init__(self, num_bytes)
 		if pkt_version is None:
-			self.pkt_version = b'010'
+			self.pkt_version = "010"
 	def primary_header_as_list(self):
 		return [self.pkt_version, self.pkt_type, self.sec_flag, self.apid, self.sequence_flags, self.pkt_sequence_count, self.pkt_data_length]
 	def show_primary_header(self):
@@ -85,7 +85,7 @@ class Packet(PrimaryHeader):
 		num_bytes = len(payload)
 
 		PrimaryHeader.__init__(self, pkt_type, sec_flag, apid, num_bytes, sequence_flags, pkt_sequence_count, pkt_version)
-
+		print(self.primary_header_as_list())
 		self.primary_header_binary = build_binary(self.primary_header_as_list())
 		self.binary = self.primary_header_binary + self.payload
 
