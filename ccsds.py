@@ -85,7 +85,6 @@ class Packet(PrimaryHeader):
 		num_bytes = len(payload)
 
 		PrimaryHeader.__init__(self, pkt_type, sec_flag, apid, num_bytes, sequence_flags, pkt_sequence_count, pkt_version)
-		print(self.primary_header_as_list())
 		self.primary_header_binary = build_binary(self.primary_header_as_list())
 		self.binary = self.primary_header_binary + self.payload
 
@@ -94,7 +93,6 @@ def unpack(pkt_bin, header_length=6):
 	header_bytes = pkt_bin[0:header_length]
 	ba.frombytes(header_bytes)
 	header_binary = ba.to01()
-	# ~ print(header_binary)
 	mapped_header = OrderedDict([(k,None) for k, v in field_length_mapping.items()])
 
 	previous_length = 0

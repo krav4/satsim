@@ -49,7 +49,7 @@ for i, chunk in enumerate(chunked_bitstream):
 	###################################
 
 	print("Sending packet %i out of %i" %(i, len(chunked_bitstream)))
-	pprint(pkt.show_primary_header())
+	print(pkt.show_primary_header())
 	s.sendto(pkt.binary, (args.ip, args.port))
 	pkt_sequence_count += 1
 	time.sleep(0.01)
