@@ -16,12 +16,8 @@ The Ground station writes a report into the transmission_report.txt file, which 
 2. `pip install -r requirements.txt` - very few requirements, use venv if desired.
 
 # How To Run Locally
-1. Start the ground station - this will bind to port 8080 on localhost. 
-
-`python ground_station.py`, or `python ground_station.py --out received_filename` to specify custom received filename to write into.
-2. Run the satellite image transmission. 
-
-`python satellite.py` or `python satellite.py --transmit transmit_filename` to specify custom source image.
+1.`python ground_station.py`, or `python ground_station.py --out received_filename` to specify custom received filename to write into. Binds to localhost:8080 by default
+2. `python satellite.py` or `python satellite.py --transmit transmit_filename` to specify custom source image. Sends UDP to localhost:8080 by default
 
 # How To Run On Pi
 1. `python ground_station.py --ip pi_ip --port port`
